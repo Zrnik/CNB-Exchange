@@ -8,7 +8,11 @@
 
 **ČNB** = **Česká Národní Banka** (*czech national bank*)
 
-This is a class implementing `\Money\Exchange` interface for `\Money\Converter` class.
+This is a class implementing `\Money\Exchange` 
+interface for `\Money\Converter` of package 
+[moneyphp/money](https://github.com/moneyphp/money).
+Source of conversion ratios is czech national bank 
+exchange rates published on their website.
 
 ## Requirements
 

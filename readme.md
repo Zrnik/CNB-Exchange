@@ -76,9 +76,9 @@ $converter = new \Money\Converter(
     )
 );
 
-$USDValue = $converter->convert($USD200, new \Money\Currency("EUR"));
+$EURValue = $converter->convert($USD200, new \Money\Currency("EUR"));
 
-echo $USDValue->getAmount()." ".$USDValue->getCurrency();
+echo $EURValue->getAmount()." ".$EURValue->getCurrency();
 ```
 
 Will **always** return `14594 EUR`.

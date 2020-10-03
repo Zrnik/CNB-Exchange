@@ -3,8 +3,5 @@ language: php
 php:
   - '7.4'
 
-services:
-  - mysql
-
 install:
-
+  - travis_retry composer install --no-progress --prefer-dist

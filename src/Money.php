@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 /*
- * Zrník.eu | AgronaroWebsite  
+ * Zrník.eu | AgronaroWebsite
  * User: Programátor
  * Date: 02.10.2020 10:47
  */
@@ -15,9 +15,16 @@ use Money\Currency;
 use Money\Formatter\IntlMoneyFormatter;
 use Nette\Caching\Cache;
 use Nette\Caching\Storages\FileStorage;
+use Tracy\Debugger;
 
 class Money
 {
+    /**
+     * Temp directory, defaults to 'Next to `src` directory'.
+     * @var string
+     */
+    public static string $tempDir = __DIR__ . '/../temp/';
+
     /**
      * @var \Money\Money
      */
@@ -268,19 +275,23 @@ class Money
         return $Ratios;
     }
 
+    //TODO: Also store it in memory as the file storage
+    //      is slower than memory! (atleast i think so,
+    //      we need to test it)
+
     private static ?Cache $cache = null;
 
     private function cnbData(int $When)
     {
         if (static::$cache === null) {
-            //Next to "src" directory.
-            $storageLocation = __DIR__ . '/../temp/';
+
+            $cacheDirectory = realpath(static::$tempDir."/cache");
 
             //Make sure it exists
-            if (!file_exists($storageLocation))
-                mkdir($storageLocation, 0777, true);
+            if (!file_exists($cacheDirectory))
+                mkdir($cacheDirectory, 0777, true);
 
-            static::$cache = new Cache(new FileStorage($storageLocation), "zrnik.money");
+            static::$cache = new Cache(new FileStorage($cacheDirectory), "cnb.exchange.rates");
         }
 
         $key = $this->convertDate($When);
@@ -292,11 +303,22 @@ class Money
 
     private function pullData(string $key): string
     {
+        $speed = microtime(true);
+
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_URL, $this->cnbUrl($key));
         $result = curl_exec($ch);
         curl_close($ch);
+
+        $msSpeed = round((microtime(true)-$speed)*1000,2);
+
+        if(function_exists('bdump'))
+        {
+            //Report to Tracy if exists!
+            bdump($msSpeed." ms","CNB Data Download");
+        }
+
         return $result;
     }
 
@@ -315,23 +337,6 @@ class Money
     }
     //endregion
 
-
-    /*
-
-
-
-
-
-    private function pullData(int $When): string
-    {
-        $Client = new Client(new ResponseFactory(), new StreamFactory());
-        $Response = $Client->sendRequest(new Request("GET", $this->cnbUrl($When)));
-        $Body = $Response->getBody();
-        return $Body->read($Body->getSize());
-    }*/
-
-
     //endregion
-
 
 }

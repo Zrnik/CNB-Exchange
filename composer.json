@@ -1,6 +1,7 @@
 {
-  "name": "zrnik/cnb-money",
-  "description": "A PHP Money class based on 'moneyphp/money' with the ability to convert between currencies with czech national bank exchange rates.",
+  "name": "zrnik/cnb-exchange",
+  "description": "An exchange class for 'moneyphp/money' using czech national bank exchange rates.",
+  "version": "v1.0.0",
   "minimum-stability": "stable",
   "license": "MIT",
   "authors": [
@@ -11,13 +12,16 @@
   ],
   "autoload": {
     "psr-4": {
-      "Zrnik\\Money\\": "src"
+      "Zrnik\\Exchange\\": "src"
     }
   },
   "require": {
+    "PHP": ">= 7.4",
     "ext-intl": "*",
     "ext-curl": "*",
-    "moneyphp/money": "^v3.3",
-    "nette/caching": "^3"
+    "moneyphp/money": "^v3.3"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.4"
   }
 }

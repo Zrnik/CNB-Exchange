@@ -1,0 +1,23 @@
+{
+  "name": "zrnik/cnb-money",
+  "description": "A PHP Money class based on 'moneyphp/money' with the ability to convert between currencies with czech national bank exchange rates.",
+  "minimum-stability": "stable",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Štěpán Zrník",
+      "email": "stepan@zrnik.eu"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Zrnik\\Money\\": "src"
+    }
+  },
+  "require": {
+    "ext-intl": "*",
+    "ext-curl": "*",
+    "moneyphp/money": "^v3.3",
+    "nette/caching": "^3"
+  }
+}

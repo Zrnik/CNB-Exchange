@@ -1,10 +1,10 @@
 # ČNB Exchange
 
-![GitHub](https://img.shields.io/github/license/zrnik/cnb-exchange)
+![GitHub](https://img.shields.io/github/license/zrnik/CNB-Exchange)
 ![Packagist Downloads](https://img.shields.io/packagist/dm/zrnik/cnb-exchange)
-![Travis (.com)](https://travis-ci.com/Zrnik/cnb-exchange.svg?branch=master)
+![Travis (.com)](https://travis-ci.com/Zrnik/CNB-Exchange.svg?branch=master)
 ![Packagist Version](https://img.shields.io/packagist/v/zrnik/cnb-exchange)  
-
+ 
 
 **ČNB** = **Česká Národní Banka** (*czech national bank*)
 

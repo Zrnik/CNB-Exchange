@@ -2,10 +2,10 @@
 
 ![GitHub](https://img.shields.io/github/license/zrnik/CNB-Exchange)
 ![Packagist Downloads](https://img.shields.io/packagist/dm/zrnik/cnb-exchange)
-![Github Action](https://github.com/Zrnik/CNB-Exchange/workflows/tests/badge.svg)
+![Github Action](https://img.shields.io/github/workflow/status/zrnik/cnb-exchange/Tests/master)
 ![Packagist Version](https://img.shields.io/packagist/v/zrnik/cnb-exchange)  
  
-
+ 
 **ČNB** = **Česká Národní Banka** (*czech national bank*)
 
 This is a class implementing `\Money\Exchange` 

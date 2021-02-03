@@ -2,7 +2,7 @@
 
 ![GitHub](https://img.shields.io/github/license/zrnik/CNB-Exchange)
 ![Packagist Downloads](https://img.shields.io/packagist/dm/zrnik/cnb-exchange)
-![Travis (.com)](https://travis-ci.com/Zrnik/CNB-Exchange.svg?branch=master)
+![Github Action](https://github.com/Zrnik/CNB-Exchange/workflows/tests/badge.svg)
 ![Packagist Version](https://img.shields.io/packagist/v/zrnik/cnb-exchange)  
  
 

@@ -66,14 +66,14 @@ class CnbExchange implements Exchange
 
         //Do our currencies exist in CNB results?
 
-        if(!isset($exchangeRates[$baseCurrency->getCode()]))
+        if (!isset($exchangeRates[$baseCurrency->getCode()]))
             throw new UnresolvableCurrencyPairException(
-                "Currency '".$baseCurrency->getCode()."' is not defined in CNB exchange rates file!"
+                "Currency '" . $baseCurrency->getCode() . "' is not defined in CNB exchange rates file!"
             );
 
-        if(!isset($exchangeRates[$counterCurrency->getCode()]))
+        if (!isset($exchangeRates[$counterCurrency->getCode()]))
             throw new UnresolvableCurrencyPairException(
-                "Currency '".$counterCurrency->getCode()."' is not defined in CNB exchange rates file!"
+                "Currency '" . $counterCurrency->getCode() . "' is not defined in CNB exchange rates file!"
             );
 
         // I'm afraid we need to use...MATH
@@ -97,9 +97,9 @@ class CnbExchange implements Exchange
 
     /**
      * @param int $When
-     * @return false|string
+     * @return string
      */
-    private static function getCnbDateKey(int $When)
+    private static function getCnbDateKey(int $When): string
     {
         // CNB exchange rates are released every working day after 14:30
         // (GMT +2)
@@ -114,11 +114,14 @@ class CnbExchange implements Exchange
 
     }
 
+    /**
+     * @var array<string,array<string, array<int,float>>>
+     */
     private static array $ratiosMemoryCache = [];
 
     /**
      * @param int $When
-     * @return array
+     * @return array<string, array<int,float>>
      * @throws Exception
      */
     private static function getExchangeRates(int $When): array
@@ -137,14 +140,22 @@ class CnbExchange implements Exchange
 
         // $fileCacheDirectory ends with slash already.
         // "spa" => serialized php array :)
-        $keyFile = $fileCacheDirectory . $cnbDateKey.".spa";
+        $keyFile = $fileCacheDirectory . $cnbDateKey . ".spa";
 
         if (file_exists($keyFile)) {
             // Oh hey! We have them in the FileCache.
             // Once set, the ratios are not changing, so
             // we don't need any invalidation mechanism!
 
-            $decoded = unserialize(file_get_contents($keyFile));
+            $content = @file_get_contents($keyFile);
+
+            if ($content === false)
+                throw new Exception("Unable to read cache file!");
+
+            $decoded = @unserialize($content);
+
+            if ($decoded === false)
+                throw new Exception("Corrupted cache file!");
 
             // Save it to memory, so we dont need to
             // reach for file again for this case
@@ -174,7 +185,7 @@ class CnbExchange implements Exchange
 
     /**
      * @param string $key
-     * @return array
+     * @return array<string, array<int,float>>
      * @throws Exception
      */
     static function loadAndParse(string $key): array
@@ -194,7 +205,7 @@ class CnbExchange implements Exchange
         curl_setopt($curlHandler, CURLOPT_URL, $url);
         $CnbResult = curl_exec($curlHandler);
 
-        if ($CnbResult === false)
+        if (is_bool($CnbResult))
             throw new Exception("'Curl' failed with error #" . curl_errno($curlHandler) . " '" . curl_error($curlHandler) . "'");
 
         curl_close($curlHandler);
@@ -222,6 +233,7 @@ class CnbExchange implements Exchange
             $Price = round(floatval(str_replace(",", ".", $Parts[4])), 4);
             $Ratios[$Short] = [$Amount, $Price];
         }
+
         return $Ratios;
     }
 }

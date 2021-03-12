@@ -30,5 +30,8 @@ jobs:
         if: steps.composer-cache.outputs.cache-hit != 'true'
         run: composer install --prefer-dist --no-progress --no-suggest
 
+      - name: Run PHPStan
+        run: composer run-script phpstan
+
       - name: Run PHPUnit
         run: composer run-script phpunit

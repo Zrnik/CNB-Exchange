@@ -73,6 +73,16 @@ class Utilities
         return $moneyFormatter->format($money);
     }
 
+    /**
+     * This method is here, if you need to convert float value to
+     * the currency format with MORE THAN TWO decimal places precision.
+     *
+     * (My use-case was to show ratio of conversion on the invoice)
+     *
+     * @param float $floatAmount
+     * @param Currency $currency
+     * @return string
+     */
     public static function formatFloat(
         float $floatAmount, Currency $currency
     ): string
@@ -100,9 +110,6 @@ class Utilities
             $floatAmount, $decimalLength, $decimalSeparator, $thousandsSeparator
         );
 
-
-        $result = str_replace($formattedExample, $formattedNumber, $correctFormat);
-
         /*
             var_dump([
                 "original" => $floatAmount,
@@ -111,13 +118,13 @@ class Utilities
                 "decimal_len" => $decimalLength,
                 "formatted_example" => $formattedExample,
                 "formatted" => $formattedNumber,
-                "result" => $result,
+                "result" => str_replace($formattedExample, $formattedNumber, $correctFormat),
                 "thousands_separator" => $thousandsSeparator,
                 "decimal_separator" => $decimalSeparator
             ]);
         */
 
-        return $result;
+        return str_replace($formattedExample, $formattedNumber, $correctFormat);
     }
 
     /**

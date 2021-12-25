@@ -22,8 +22,9 @@
     "moneyphp/money": "^v3.3"
   },
   "require-dev": {
+    "roave/security-advisories": "dev-latest",
     "phpunit/phpunit": "^9.4",
-    "phpstan/phpstan": "^0.12"
+    "phpstan/phpstan": "^1"
   },
   "scripts": {
     "phpunit": "phpunit",

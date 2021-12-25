@@ -7,6 +7,7 @@ use Money\Currency;
 use Money\CurrencyPair;
 use Money\Exception\UnresolvableCurrencyPairException;
 use Money\Exchange;
+use RuntimeException;
 
 class CnbExchange implements Exchange
 {
@@ -27,10 +28,11 @@ class CnbExchange implements Exchange
      */
     public function __construct(?int $When = null)
     {
-        if ($When === null)
+        if ($When === null) {
             $When = time();
+        }
 
-        $this->When = intval($When);
+        $this->When = (int) $When;
     }
 
     /**
@@ -44,7 +46,7 @@ class CnbExchange implements Exchange
         return new CurrencyPair(
             $baseCurrency,
             $counterCurrency,
-            static::currencyRatioBetween(
+            self::currencyRatioBetween(
                 $this->When,
                 $baseCurrency,
                 $counterCurrency
@@ -61,20 +63,22 @@ class CnbExchange implements Exchange
      */
     public static function currencyRatioBetween(int $When, Currency $baseCurrency, Currency $counterCurrency)
     {
-        $exchangeRates = static::getExchangeRates($When);
+        $exchangeRates = self::getExchangeRates($When);
 
 
         //Do our currencies exist in CNB results?
 
-        if (!isset($exchangeRates[$baseCurrency->getCode()]))
+        if (!isset($exchangeRates[$baseCurrency->getCode()])) {
             throw new UnresolvableCurrencyPairException(
                 "Currency '" . $baseCurrency->getCode() . "' is not defined in CNB exchange rates file!"
             );
+        }
 
-        if (!isset($exchangeRates[$counterCurrency->getCode()]))
+        if (!isset($exchangeRates[$counterCurrency->getCode()])) {
             throw new UnresolvableCurrencyPairException(
                 "Currency '" . $counterCurrency->getCode() . "' is not defined in CNB exchange rates file!"
             );
+        }
 
         // I'm afraid we need to use...MATH
         // https://www.youtube.com/watch?v=gENVB6tjq_M
@@ -126,59 +130,67 @@ class CnbExchange implements Exchange
      */
     private static function getExchangeRates(int $When): array
     {
-        $cnbDateKey = static::getCnbDateKey($When);
+        $cnbDateKey = self::getCnbDateKey($When);
 
-        if (isset(static::$ratiosMemoryCache[$cnbDateKey]))
-            return static::$ratiosMemoryCache[$cnbDateKey];
+        if (isset(self::$ratiosMemoryCache[$cnbDateKey])) {
+            return self::$ratiosMemoryCache[$cnbDateKey];
+        }
 
         //Not calculated? How about FileCache?
 
-        $fileCacheDirectory = static::$tempDir . "/cache/cnb.exchange.ratios/";
+        $fileCacheDirectory = self::$tempDir . "/cache/cnb.exchange.ratios/";
 
-        if (!file_exists($fileCacheDirectory))
-            mkdir($fileCacheDirectory, 0777, true);
+        if (!file_exists($fileCacheDirectory) && !mkdir($fileCacheDirectory, 0777, true) && !is_dir($fileCacheDirectory)) {
+            throw new RuntimeException(sprintf('Directory "%s" was not created', $fileCacheDirectory));
+        }
 
         // $fileCacheDirectory ends with slash already.
         // "spa" => serialized php array :)
         $keyFile = $fileCacheDirectory . $cnbDateKey . ".spa";
 
         if (file_exists($keyFile)) {
-            // Oh hey! We have them in the FileCache.
+            // Oh, hey! We have them in the FileCache.
             // Once set, the ratios are not changing, so
             // we don't need any invalidation mechanism!
 
             $content = @file_get_contents($keyFile);
 
-            if ($content === false)
-                throw new Exception("Unable to read cache file!");
+            if ($content === false) {
+                throw new RuntimeException("Unable to read cache file!");
+            }
 
+            /**
+             * @var array<string, array<int, float>> |false $decoded
+             * @noinspection UnserializeExploitsInspection
+             */
             $decoded = @unserialize($content);
 
-            if ($decoded === false)
-                throw new Exception("Corrupted cache file!");
+            if ($decoded === false) {
+                throw new RuntimeException("Corrupted cache file!");
+            }
 
-            // Save it to memory, so we dont need to
+            // Save it to memory, so we don't need to
             // reach for file again for this case
             // (and unserialize again)
 
-            static::$ratiosMemoryCache[$cnbDateKey] = $decoded;
+            self::$ratiosMemoryCache[$cnbDateKey] = $decoded;
 
             return $decoded;
         }
 
-        // Oh, we dont even have it in the FileCache?
+        // Oh, we don't even have it in the FileCache?
 
         // Damn, we have to ask for it OUR NATIONAL BANK
         // (why do i hear russian anthem? oh, its the neighbor...)
 
-        $ratios = static::loadAndParse($cnbDateKey); //load and parse!
+        $ratios = self::loadAndParse($cnbDateKey); //load and parse!
 
         // Now, that we have the ratios from CNB, we will
         // save it to our '$keyFile' and to memory for future
         // usage in this runtime.
 
         file_put_contents($keyFile, serialize($ratios));
-        static::$ratiosMemoryCache[$cnbDateKey] = $ratios;
+        self::$ratiosMemoryCache[$cnbDateKey] = $ratios;
 
         return $ratios;
     }
@@ -188,7 +200,7 @@ class CnbExchange implements Exchange
      * @return array<string, array<int,float>>
      * @throws Exception
      */
-    static function loadAndParse(string $key): array
+    public static function loadAndParse(string $key): array
     {
         $url = "https://www.cnb.cz/cs/financni-trhy/devizovy-trh"
             . "/kurzy-devizoveho-trhu/kurzy-devizoveho-trhu/"
@@ -205,8 +217,9 @@ class CnbExchange implements Exchange
         curl_setopt($curlHandler, CURLOPT_URL, $url);
         $CnbResult = curl_exec($curlHandler);
 
-        if (is_bool($CnbResult))
-            throw new Exception("'Curl' failed with error #" . curl_errno($curlHandler) . " '" . curl_error($curlHandler) . "'");
+        if (is_bool($CnbResult)) {
+            throw new RuntimeException("'Curl' failed with error #" . curl_errno($curlHandler) . " '" . curl_error($curlHandler) . "'");
+        }
 
         curl_close($curlHandler);
 
@@ -223,14 +236,15 @@ class CnbExchange implements Exchange
                 continue;
             }
 
-            if (trim($Line) === "")
+            if (trim($Line) === "") {
                 continue;
+            }
 
             $Parts = explode("|", $Line);
 
-            $Amount = intval($Parts[2]);
+            $Amount = (int)$Parts[2];
             $Short = $Parts[3];
-            $Price = round(floatval(str_replace(",", ".", $Parts[4])), 4);
+            $Price = round((float)str_replace(",", ".", $Parts[4]), 4);
             $Ratios[$Short] = [$Amount, $Price];
         }
 

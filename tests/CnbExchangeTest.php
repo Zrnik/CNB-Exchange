@@ -10,11 +10,9 @@ class CnbExchangeTest extends TestCase
 {
     public function testExchange(): void
     {
-        $When = intval(
-            mktime(
-                12, 0, 0,
-                8, 22, 2016
-            )
+        $When = (int) mktime(
+            12, 0, 0,
+            8, 22, 2016
         );
 
         $USD_345 = new Money(34500, new Currency("USD"));
@@ -35,18 +33,16 @@ class CnbExchangeTest extends TestCase
     public function testPreciseExchangeRatio(): void
     {
         $ratio = CnbExchange::currencyRatioBetween(
-            intval(
-                mktime(
-                    12,0,0,
-                    1,1,2010
-                )
+            (int) mktime(
+                12, 0, 0,
+                1, 1, 2010
             ),
             new Currency("EUR"),
             new Currency("CZK"),
         );
 
         $this->assertSame(
-            $ratio, 26.465
+            $ratio, '26.465'
         );
 
     }

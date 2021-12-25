@@ -58,10 +58,10 @@ class CnbExchange implements Exchange
      * @param int $When
      * @param Currency $baseCurrency
      * @param Currency $counterCurrency
-     * @return float|int
+     * @return numeric-string
      * @throws Exception
      */
-    public static function currencyRatioBetween(int $When, Currency $baseCurrency, Currency $counterCurrency)
+    public static function currencyRatioBetween(int $When, Currency $baseCurrency, Currency $counterCurrency): string
     {
         $exchangeRates = self::getExchangeRates($When);
 
@@ -85,7 +85,8 @@ class CnbExchange implements Exchange
 
         //TODO: make this piece of sh..code more readable...
 
-        return
+        /** @var int|float $result */
+        $result =
             (
                 $exchangeRates[$baseCurrency->getCode()][1]
                 /
@@ -97,6 +98,8 @@ class CnbExchange implements Exchange
                 /
                 $exchangeRates[$baseCurrency->getCode()][0]
             );
+
+        return (string) $result;
     }
 
     /**

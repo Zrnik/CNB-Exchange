@@ -1,7 +1,7 @@
 {
   "name": "zrnik/cnb-exchange",
   "description": "An exchange class for 'moneyphp/money' using czech national bank exchange rates.",
-  "version": "v1.1.0",
+  "version": "v1.2.0",
   "minimum-stability": "stable",
   "license": "MIT",
   "authors": [
@@ -19,7 +19,7 @@
     "PHP": ">= 7.4",
     "ext-intl": "*",
     "ext-curl": "*",
-    "moneyphp/money": "^v3.3"
+    "moneyphp/money": "^v4"
   },
   "require-dev": {
     "roave/security-advisories": "dev-latest",

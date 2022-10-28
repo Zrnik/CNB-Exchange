@@ -15,11 +15,16 @@
       "Zrnik\\Exchange\\": "src"
     }
   },
+  "config": {
+    "platform": {
+      "php": "7.4"
+    }
+  },
   "require": {
     "PHP": ">= 7.4",
     "ext-intl": "*",
     "ext-curl": "*",
-    "moneyphp/money": "^v4"
+    "moneyphp/money": "^3"
   },
   "require-dev": {
     "roave/security-advisories": "dev-latest",

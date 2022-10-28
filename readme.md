@@ -21,7 +21,7 @@ exchange rates published on their website.
     "PHP": ">= 7.4",
     "ext-intl": "*",
     "ext-curl": "*",
-    "moneyphp/money": "^v3.3"
+    "moneyphp/money": "^3"
 }
 ```
 

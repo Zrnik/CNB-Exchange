@@ -18,25 +18,30 @@ exchange rates published on their website.
 
 ```json
 {
-    "PHP": ">= 7.4",
-    "ext-intl": "*",
-    "ext-curl": "*",
-    "moneyphp/money": "^3"
+  "PHP": ">= 7.4",
+  "ext-intl": "*",
+  "ext-curl": "*",
+  "psr/simple-cache": "^1",
+  "psr/http-client": "^1",
+  "psr/http-factory": "^1",
+  "moneyphp/money": "^3"
 }
 ```
 
 ## Caching
 
-As ČNB ratios are not changing, we don't need to
-invalidate our cache, so we use pure static file cache. 
-Default cache location is in "temp" directory next to 
-the "src" directory of this package. Path to cache 
-directory can be changed like this:
-`\Zrnik\Exchange\CnbExchange::$tempDir = "new/temp/dir";`.
+This package uses [PSR-16](https://www.php-fig.org/psr/psr-16/) `CacheInterface` interface for caching.
 
 ## Usage
 
+You should configure your DI to create `\Zrnik\Exchange\CnbExchange` instance for you.
+
 ```php
+/** @var \Zrnik\Exchange\CnbExchange $exchange */
+$exchange = $this->yourDIContainer->get(\Zrnik\Exchange\CnbExchange::class);
+
+
+
 $EUR250 = new \Money\Money(25000, new \Money\Currency("EUR"));
 $converter = new \Money\Converter(
     new \Money\Currencies\ISOCurrencies(),
@@ -82,112 +87,3 @@ echo $EURValue->getAmount()." ".$EURValue->getCurrency();
 ```
 
 Will **always** return `14594 EUR`.
-
-
-## Utilities
-
-I have prepared some utilities you might consider useful.
-
-#### Format
-
-If you want to print a currency nicely you need to do it like this:
-
-```php
-$numberFormatter = new \NumberFormatter("de_DE", \NumberFormatter::CURRENCY);
-$moneyFormatter = new \Money\Formatter\IntlMoneyFormatter($numberFormatter, new \Money\Currencies\ISOCurrencies());
-echo $moneyFormatter->format(new \Money\Money(25000,new \Money\Currency("EUR")));
-
-echo PHP_EOL;
-
-$numberFormatter = new \NumberFormatter("en_US", \NumberFormatter::CURRENCY);
-$moneyFormatter = new \Money\Formatter\IntlMoneyFormatter($numberFormatter, new \Money\Currencies\ISOCurrencies());
-echo $moneyFormatter->format(new \Money\Money(25000,new \Money\Currency("USD")));
-```
-
-to get result like this:
-
-```
-250,00 €
-$250.00
-```
-
-Notice its pretty long code, and you have 
-to define correct language code for each 
-currency? The same can be achieved with 
-`\Zrnik\Exchange\Utilities::format(\Money\Money $Money);`  
-method.
-
-```php
-echo \Zrnik\Exchange\Utilities::format(
-    new \Money\Money(25000, new \Money\Currency("EUR"))
-);
-echo PHP_EOL;
-echo \Zrnik\Exchange\Utilities::format(
-    new \Money\Money(25000, new \Money\Currency("USD"))
-);
-```
-
-BOOM! Tetris for Jeff!
-... I mean, its done.
-
-#### Static Converter
-
-You can use the static converter for a quick conversion.
-The third parameter is time, defaults to 'yesterday'.
-
-```php
-echo
-\Zrnik\Exchange\Utilities::format(
-    \Zrnik\Exchange\Utilities::convert(
-        new \Money\Money(1500, new \Money\Currency("EUR")),
-        new \Money\Currency("USD")
-    )
-);
-
-echo PHP_EOL;
-
-echo
-\Zrnik\Exchange\Utilities::format(
-    \Zrnik\Exchange\Utilities::convert(
-        new \Money\Money(1500, new \Money\Currency("EUR")),
-        new \Money\Currency("USD"),
-        mktime(
-            12, 0, 0,
-            1, 1, 2000
-        )
-    )
-);
-```
-
-Returns: 
-
-```
-$17.60  //This one depends on daily exchange rate
-$15.06  //This one will have this value every time!
-```
-
-## Converter Factory
-
-This is just a candy. It allows us to write this:
-
-```php
-$converterToday = \Zrnik\Exchange\Utilities::createConverter();
-$converterNewYear =  \Zrnik\Exchange\Utilities::createConverter(
-    mktime(12,0,0,1,1,2015)
-);
-```
-
-instead of this:
-
-```php
-$converterToday = new \Money\Converter(new \Money\Currencies\ISOCurrencies(), new \Zrnik\Exchange\CnbExchange());
-$converterNewYear = new \Money\Converter(
-    new \Money\Currencies\ISOCurrencies(), 
-    new \Zrnik\Exchange\CnbExchange(
-        mktime(12,0,0,1,1,2015)
-    )
-);
-```
-
-
-

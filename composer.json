@@ -12,7 +12,8 @@
   ],
   "autoload": {
     "psr-4": {
-      "Zrnik\\Exchange\\": "src"
+      "Zrnik\\Exchange\\": "src",
+      "Tests\\": "tests"
     }
   },
   "config": {
@@ -21,15 +22,21 @@
     }
   },
   "require": {
-    "PHP": ">= 7.4",
+    "PHP": ">=7.4|>=8.0",
     "ext-intl": "*",
     "ext-curl": "*",
+    "psr/simple-cache": "^1",
+    "psr/http-client": "^1",
+    "psr/http-factory": "^1",
     "moneyphp/money": "^3"
   },
   "require-dev": {
     "roave/security-advisories": "dev-latest",
     "phpunit/phpunit": "^9.4",
-    "phpstan/phpstan": "^1"
+    "phpstan/phpstan": "^1",
+    "tracy/tracy": "^2",
+    "php-http/guzzle7-adapter": "^1",
+    "http-interop/http-factory-guzzle": "^1"
   },
   "scripts": {
     "phpunit": "phpunit",

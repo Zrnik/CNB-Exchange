@@ -7,7 +7,6 @@ namespace Zrnik\Exchange\ExchangeRates;
 use DateTimeImmutable;
 use DateTimeZone;
 use Exception;
-use Money\Currency;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
@@ -83,22 +82,23 @@ class ExchangeRatesRepository
         $now = new DateTimeImmutable('now', new DateTimeZone('Europe/Prague'));
         $date = $date->setTimezone(new DateTimeZone('Europe/Prague'));
 
-        if($date > $now) {
+        if ($date > $now) {
             // Sorry, im not clairvoyant...
             $date = $now;
         }
 
-        if($date->format('Y-m-d') === $now->format('Y-m-d'))
-        {
+        if ($date->format('Y-m-d') === $now->format('Y-m-d')) {
             // CNB ratios are published every day at 14:30 CET,
             // that means, that until then, we are creating
             // cache key with postfix to allow autocorrection
             // after 14:30
+            //
+            // (+ 10 minutes as a reserve, if they are little late)
 
-            $hour = (int) $date->format('H');
-            $minutes = (int) $date->format('i');
+            $hour = (int)$date->format('H');
+            $minutes = (int)$date->format('i');
 
-            if($hour <= 13 || ($hour === 14 && $minutes <= 30)) {
+            if ($hour <= 13 || ($hour === 14 && $minutes <= 40)) {
                 return $now->format('Y-m-d') . '-before-14-30';
             }
         }

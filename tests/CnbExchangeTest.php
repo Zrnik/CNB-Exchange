@@ -87,6 +87,27 @@ class CnbExchangeTest extends TestCase
         );
     }
 
+    public function testSameCurrency(): void
+    {
+        $CZK_100_00 = new Money(10000, new Currency("CZK"));
+
+        $also_CZK_100_00 = $this->converter->convert($CZK_100_00, new Currency("CZK"));
+
+        $this->assertEquals(
+            10000,
+            $also_CZK_100_00->getAmount()
+        );
+
+        $CZK_60000_00 = new Money(6000000, new Currency("CZK"));
+
+        $also_CZK_60000_00 = $this->converter->convert($CZK_60000_00, new Currency("CZK"));
+
+        $this->assertEquals(
+            6000000,
+            $also_CZK_60000_00->getAmount()
+        );
+    }
+
     /**
      * @return void
      * @throws ClientExceptionInterface

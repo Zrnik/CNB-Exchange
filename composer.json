@@ -16,7 +16,6 @@
     },
     "require": {
         "PHP": "^8",
-        "ext-intl": "*",
         "moneyphp/money": "^4",
         "psr/cache": "^3",
         "psr/http-client": "^1",

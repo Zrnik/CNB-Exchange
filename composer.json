@@ -1,33 +1,37 @@
 {
-  "name": "zrnik/cnb-exchange",
-  "description": "An exchange class for 'moneyphp/money' using czech national bank exchange rates.",
-  "version": "v1.2.0",
-  "minimum-stability": "stable",
-  "license": "MIT",
-  "authors": [
-    {
-      "name": "Štěpán Zrník",
-      "email": "stepan@zrnik.eu"
+    "name": "zrnik/cnb-exchange",
+    "description": "An exchange class for 'moneyphp/money' using czech national bank exchange rates.",
+    "minimum-stability": "stable",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Štěpán Zrník",
+            "email": "stepan.zrnik@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Zrnik\\Exchange\\": "src"
+        }
+    },
+    "require": {
+        "PHP": "^8",
+        "ext-intl": "*",
+        "moneyphp/money": "^4",
+        "psr/cache": "^3",
+        "psr/http-client": "^1",
+        "psr/http-factory": "^1"
+    },
+    "require-dev": {
+        "roave/security-advisories": "dev-latest",
+        "phpunit/phpunit": "^9.4",
+        "phpstan/phpstan": "^1",
+        "guzzlehttp/guzzle": "^7",
+        "beste/in-memory-cache": "^1.2",
+        "tracy/tracy": "^2"
+    },
+    "scripts": {
+        "phpunit": "phpunit",
+        "phpstan": "phpstan analyse --memory-limit 1G"
     }
-  ],
-  "autoload": {
-    "psr-4": {
-      "Zrnik\\Exchange\\": "src"
-    }
-  },
-  "require": {
-    "PHP": ">= 7.4",
-    "ext-intl": "*",
-    "ext-curl": "*",
-    "moneyphp/money": "^v4"
-  },
-  "require-dev": {
-    "roave/security-advisories": "dev-latest",
-    "phpunit/phpunit": "^9.4",
-    "phpstan/phpstan": "^1"
-  },
-  "scripts": {
-    "phpunit": "phpunit",
-    "phpstan": "phpstan analyse --memory-limit 1G"
-  }
 }

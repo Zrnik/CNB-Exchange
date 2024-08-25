@@ -8,14 +8,16 @@ use Money\Currencies\ISOCurrencies;
 use Money\Currency;
 use Money\Money;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Client\ClientExceptionInterface;
 use Zrnik\Exchange\CnbExchange;
 use Zrnik\Exchange\ExchangeRateProvider;
+use \Psr\Cache\InvalidArgumentException;
 
 class ExchangeRateProviderTest extends TestCase
 {
     /**
-     * @throws \Psr\Cache\InvalidArgumentException
-     * @throws \Psr\Http\Client\ClientExceptionInterface
+     * @throws InvalidArgumentException
+     * @throws ClientExceptionInterface
      */
     public function testGetExchangeRate(): void
     {
@@ -38,8 +40,8 @@ class ExchangeRateProviderTest extends TestCase
         $this->assertSame(
             [
                 'CZK' => [1, 1],
-                'USD' => [1, 23.454],
-                'EUR' => [1, 25.37],
+                'USD' => [1, 22.621],
+                'EUR' => [1, 25.41],
             ],
             $exampleRates,
         );
@@ -60,7 +62,7 @@ class ExchangeRateProviderTest extends TestCase
         );
 
         $this->assertEquals(
-            26893,
+            26313,
             $converter->convert($USD_345, new Currency('GBP'))->getAmount()
         );
 
@@ -75,7 +77,6 @@ class ExchangeRateProviderTest extends TestCase
             new Currency("CZK"),
         );
 
-        $this->assertSame($ratio, 25.37);
-
+        $this->assertSame($ratio, 26.465);
     }
 }

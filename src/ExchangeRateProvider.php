@@ -68,9 +68,9 @@ class ExchangeRateProvider
      */
     public function getExchangeRates(DateTime $dateTime): array
     {
-        $cacheKey = sprintf('cnb-exchange-rates-%s', DateConvert::fromDateTime($dateTime));
+        $dateTimeFormatted = DateConvert::fromDateTime($dateTime);
 
-        $cachedValue = $this->cacheItemPool->getItem($cacheKey);
+        $cachedValue = $this->cacheItemPool->getItem($dateTimeFormatted);
 
         if ($cachedValue->isHit()) {
             /** @var array<string, array{0: float, 1: float}> */
@@ -79,16 +79,16 @@ class ExchangeRateProvider
 
         $todayDateTime = new DateTime();
         $todayDateTimeKey = DateConvert::fromDateTime($todayDateTime);
-        if ($dateTime > $todayDateTime && $todayDateTimeKey !== $cacheKey) {
+        if ($dateTime > $todayDateTime && $todayDateTimeKey !== $dateTimeFormatted) {
             throw new RuntimeException('Cannot retrieve future exchange rates!');
         }
 
-        $isToday = $todayDateTimeKey === $cacheKey;
+        $isToday = $todayDateTimeKey === $dateTimeFormatted;
 
         // If it's today, cache for 5 minutes, if it's in the past, cache indefinitely...
         $cachedValue->expiresAfter($isToday ? 300 : null);
 
-        $ratios = $this->fetchRatiosByKey($cacheKey);
+        $ratios = $this->fetchRatiosByKey($dateTimeFormatted);
 
         $cachedValue->set($ratios);
 

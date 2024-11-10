@@ -70,7 +70,9 @@ class ExchangeRateProvider
     {
         $dateTimeFormatted = DateConvert::fromDateTime($dateTime);
 
-        $cachedValue = $this->cacheItemPool->getItem($dateTimeFormatted);
+        $cachedValue = $this->cacheItemPool->getItem(
+            sprintf('cnb_exchange_rates_%s', str_replace('.', '_', $dateTimeFormatted))
+        );
 
         if ($cachedValue->isHit()) {
             /** @var array<string, array{0: float, 1: float}> */

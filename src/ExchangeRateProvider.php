@@ -3,6 +3,7 @@
 namespace Zrnik\Exchange;
 
 use DateTime;
+use GuzzleHttp\Exception\ServerException;
 use Money\Currency;
 use Money\Exception\UnresolvableCurrencyPairException;
 use Psr\Cache\CacheItemPoolInterface;
@@ -15,6 +16,10 @@ use RuntimeException;
 class ExchangeRateProvider
 {
     private const CNB_EXCHANGE_RATE_URL_FORMAT = 'https://www.cnb.cz/cs/financni-trhy/devizovy-trh/kurzy-devizoveho-trhu/kurzy-devizoveho-trhu/denni_kurz.txt?date=%s';
+
+    private const CNB_EXCHANGE_ERROR_TITLES = [
+        '<title>Interní chyba serveru</title>',
+    ];
 
     public function __construct(
         private CacheItemPoolInterface        $cacheItemPool,
@@ -111,9 +116,22 @@ class ExchangeRateProvider
             sprintf(self::CNB_EXCHANGE_RATE_URL_FORMAT, $cacheKey),
         );
 
+
         $response = $this->client->sendRequest($request);
 
+
         $value = (string)$response->getBody();
+
+        foreach (self::CNB_EXCHANGE_ERROR_TITLES as $errorTitle) {
+            if (str_contains($value, $errorTitle)) {
+                throw new ServerException(
+                    'Unable to retrieve data from CNB.',
+                    $request,
+                    $response->withStatus(500)
+                );
+            }
+        }
+
         $lines = explode("\n", $value);
 
         // First row is the date, we do not need it.
